@@ -7,8 +7,8 @@ import {
   map,
   takeUntil,
 } from 'rxjs/operators';
-import { OCCUPATION_LIST, OCCUPATION_RATING } from './app.constants';
-import { PremiumCalculatorService, PremiumOptions } from './calculator';
+import { OCCUPATION_LIST } from './app.constants';
+import { PremiumCalculatorService } from './calculator';
 
 @Component({
   selector: 'app-root',
@@ -114,10 +114,6 @@ export class AppComponent implements OnInit {
             (oc) => oc.key === occupation
           )[0].value;
 
-          console.log(
-            `Age:  ${age}, occupationRatingFactor: ${occupationRatingFactor}, deathCoverAmount: ${deathCoverAmount}`
-          );
-
           this.calculateSumAssured(
             age,
             occupationRatingFactor,
@@ -126,9 +122,11 @@ export class AppComponent implements OnInit {
         }
       );
   }
+
   private liveValueChanges(control: AbstractControl) {
     return control.valueChanges.pipe(takeUntil(this.destroyed$));
   }
+
   private getForm() {
     return this.fb.group({
       name: ['', Validators.required],
