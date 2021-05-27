@@ -1,8 +1,6 @@
 import {
   ComponentFixture,
   fakeAsync,
-  flush,
-  flushMicrotasks,
   TestBed,
   tick,
 } from '@angular/core/testing';
@@ -30,18 +28,10 @@ describe('AppComponent', () => {
         BrowserAnimationsModule,
       ],
       declarations: [AppComponent],
-      providers: [
-        {
-          provide: PremiumCalculatorService,
-          useValue: {
-            calculate() {
-              return 10;
-            },
-          },
-        },
-      ],
+      providers: [PremiumCalculatorService],
     }).compileComponents();
   });
+
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
@@ -79,36 +69,54 @@ describe('AppComponent', () => {
     expect(component.isPremiumVisible).toEqual(false);
   });
 
-  fit(`should call 'calculateSumAssured' when form is valid`, async () => {
-    const spy = spyOn(component.premiumCalculator, 'calculate');
+  it(`should call 'calculateSumAssured' when form is valid`, fakeAsync(async () => {
+    const spyCalculateSumAssured = spyOn(component, 'calculateSumAssured');
+    const spyCalculate = spyOn(service, 'calculate');
+    await initializeFormControl(loader, fixture);
 
-    const select = await loader.getHarness(MatSelectHarness);
-    await select.clickOptions();
+    tick(2000);
+    fixture.detectChanges();
+    expect(component.formGroup.valid).toBe(true);
+    expect(spyCalculateSumAssured).toHaveBeenCalledTimes(1);
+  }));
 
-    const datePicker = await loader.getHarness(MatDatepickerInputHarness);
-    await datePicker.setValue('2021-12-10');
+  it(`should call 'calculateSumAssured' when form is valid`, fakeAsync(async () => {
+    const spyCalculate = spyOn(service, 'calculate').and.returnValue(10);
+    await initializeFormControl(loader, fixture);
 
-    const deathCoverAmountInput = fixture.debugElement.query(
-      By.css('input[formcontrolname="deathCoverAmount"]')
-    );
-
-    deathCoverAmountInput.nativeElement.blur();
-    deathCoverAmountInput.nativeElement.value = 12000;
-    await deathCoverAmountInput.nativeElement.dispatchEvent(new Event('input'));
-
-    const ageInput = fixture.debugElement.query(
-      By.css('input[formcontrolname="age"]')
-    );
-    ageInput.nativeElement.value = 12;
-    await ageInput.nativeElement.dispatchEvent(new Event('input'));
-
-    component.nameControl.setValue('Test');
-    component.formGroup.markAllAsTouched();
-    component.formGroup.updateValueAndValidity();
-
+    tick(2000);
     fixture.detectChanges();
 
-    expect(component.formGroup.valid).toBe(true);
-    expect(spy).toHaveBeenCalled();
-  });
+    expect(spyCalculate).toHaveBeenCalledTimes(1);
+  }));
 });
+
+async function initializeFormControl(
+  loader: HarnessLoader,
+  fixture: ComponentFixture<AppComponent>
+) {
+  let component = fixture.componentInstance;
+  const select = await loader.getHarness(MatSelectHarness);
+  await select.clickOptions();
+
+  const datePicker = await loader.getHarness(MatDatepickerInputHarness);
+  await datePicker.setValue('2021-12-10');
+
+  const deathCoverAmountInput = fixture.debugElement.query(
+    By.css('input[formcontrolname="deathCoverAmount"]')
+  );
+
+  deathCoverAmountInput.nativeElement.blur();
+  deathCoverAmountInput.nativeElement.value = 12000;
+  await deathCoverAmountInput.nativeElement.dispatchEvent(new Event('input'));
+
+  const ageInput = fixture.debugElement.query(
+    By.css('input[formcontrolname="age"]')
+  );
+  ageInput.nativeElement.value = 12;
+  await ageInput.nativeElement.dispatchEvent(new Event('input'));
+
+  component.nameControl.setValue('Test');
+  component.formGroup.markAllAsTouched();
+  component.formGroup.updateValueAndValidity();
+}
