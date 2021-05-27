@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private premiumCalculator: PremiumCalculatorService
+    public premiumCalculator: PremiumCalculatorService
   ) {
     this.formGroup = this.getForm();
   }
@@ -60,6 +60,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.registerFormControlChanges();
   }
+
   ngOnDestroy() {
     this.destroyed$.next(true);
     this.destroyed$.complete();
@@ -79,11 +80,7 @@ export class AppComponent implements OnInit {
       .toFixed(2);
   }
 
-  private isControlValid(control: AbstractControl | null): boolean {
-    return !!(control && control.valid && control.touched);
-  }
-
-  private registerFormControlChanges() {
+  registerFormControlChanges() {
     const age$ = this.liveValueChanges(this.ageControl);
     const occupation$ = this.liveValueChanges(this.occupationControl);
     const deathCoverAmount$ = this.liveValueChanges(
@@ -109,18 +106,21 @@ export class AppComponent implements OnInit {
           age: number,
           occupation: string,
           deathCoverAmount: number
-        ]) => {
-          const occupationRatingFactor = OCCUPATION_LIST.filter(
-            (oc) => oc.key === occupation
-          )[0].value;
-
+        ]) =>
           this.calculateSumAssured(
             age,
-            occupationRatingFactor,
+            this.extractRatingFactor(occupation),
             deathCoverAmount
-          );
-        }
+          )
       );
+  }
+
+  private extractRatingFactor(occupation: string) {
+    return OCCUPATION_LIST.filter((oc) => oc.key === occupation)[0].value;
+  }
+
+  private isControlValid(control: AbstractControl | null): boolean {
+    return !!(control && control.valid && control.touched);
   }
 
   private liveValueChanges(control: AbstractControl) {
