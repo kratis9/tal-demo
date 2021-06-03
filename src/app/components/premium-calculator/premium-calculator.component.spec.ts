@@ -11,13 +11,14 @@ import { MatDatepickerInputHarness } from '@angular/material/datepicker/testing'
 import { ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AppComponent } from './app.component';
-import { TALMaterialModule } from './material.module';
-import { PremiumCalculatorService } from './calculator';
+import { TALMaterialModule } from 'src/app/material.module';
+import { PremiumCalculatorService } from 'src/app/services/calculator';
+import { PremiumCalculatorComponent } from './premium-calculator.component';
+import { CommonModule } from '@angular/common';
 
-describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
+describe('PremiumCalculatorComponent', () => {
+  let component: PremiumCalculatorComponent;
+  let fixture: ComponentFixture<PremiumCalculatorComponent>;
   let loader: HarnessLoader;
   let service: PremiumCalculatorService;
   beforeEach(async () => {
@@ -26,14 +27,15 @@ describe('AppComponent', () => {
         ReactiveFormsModule,
         TALMaterialModule,
         BrowserAnimationsModule,
+        CommonModule,
       ],
-      declarations: [AppComponent],
+      declarations: [PremiumCalculatorComponent],
       providers: [PremiumCalculatorService],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
+    fixture = TestBed.createComponent(PremiumCalculatorComponent);
     component = fixture.componentInstance;
     loader = TestbedHarnessEnvironment.loader(fixture);
     service = TestBed.inject(PremiumCalculatorService);
@@ -93,7 +95,7 @@ describe('AppComponent', () => {
 
 async function initializeFormControl(
   loader: HarnessLoader,
-  fixture: ComponentFixture<AppComponent>
+  fixture: ComponentFixture<PremiumCalculatorComponent>
 ) {
   let component = fixture.componentInstance;
   const select = await loader.getHarness(MatSelectHarness);

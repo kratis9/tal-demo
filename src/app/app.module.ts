@@ -5,12 +5,14 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TALMaterialModule } from './material.module';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RestrictLettersOnlyDirective } from './character-only.directive';
-import { NumberOnlyDirective } from './number-only.directive';
+import { RestrictLettersOnlyDirective } from './directives/character-only.directive';
+import { NumberOnlyDirective } from './directives/number-only.directive';
+import { PremiumCalculatorComponent } from './components/premium-calculator/premium-calculator.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    PremiumCalculatorComponent,
     RestrictLettersOnlyDirective,
     NumberOnlyDirective,
   ],
