@@ -52,13 +52,14 @@ export class AppComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    public premiumCalculator: PremiumCalculatorService
+    private premiumCalculator: PremiumCalculatorService
   ) {
     this.formGroup = this.getForm();
   }
 
   ngOnInit() {
     this.registerFormControlChanges();
+    this.autoPopulateAge();
   }
 
   ngOnDestroy() {
@@ -66,28 +67,47 @@ export class AppComponent implements OnInit {
     this.destroyed$.complete();
   }
 
-  public calculateSumAssured(
+  onReset() {
+    this.formGroup.reset();
+    this.formGroup.setErrors(null);
+  }
+
+  autoPopulateAge() {
+    this.dateOfBirthControl.valueChanges.subscribe((value) => {
+      if (value) {
+        this.ageControl.setValue(this.ageFromDateOfBirthday(value));
+        this.ageControl.markAsTouched();
+        this.ageControl.updateValueAndValidity();
+      }
+    });
+  }
+
+  calculateSumAssured(
     age: number,
     occupationRatingFactor: number,
     deathCoverAmount: number
   ) {
-    this.sumAssured = this.premiumCalculator
-      .calculate({
-        age,
-        occupationRatingFactor,
-        deathCoverAmount,
-      })
-      .toFixed(2);
+    setTimeout(() => {
+      this.sumAssured = this.premiumCalculator
+        .calculate({
+          age,
+          occupationRatingFactor,
+          deathCoverAmount,
+        })
+        .toFixed(2);
+    }, 0);
   }
 
   registerFormControlChanges() {
     const age$ = this.liveValueChanges(this.ageControl);
+    const dob$ = this.liveValueChanges(this.dateOfBirthControl);
     const occupation$ = this.liveValueChanges(this.occupationControl);
     const deathCoverAmount$ = this.liveValueChanges(
       this.deathCoverAmountControl
     );
 
     combineLatest([
+      dob$.pipe(distinctUntilChanged()),
       age$.pipe(
         debounceTime(200),
         distinctUntilChanged(),
@@ -102,7 +122,8 @@ export class AppComponent implements OnInit {
     ])
       .pipe(takeUntil(this.destroyed$))
       .subscribe(
-        ([age = 0, occupation, deathCoverAmount = 0]: [
+        ([datOfBirth, age = 0, occupation, deathCoverAmount = 0]: [
+          datOfBirth: number,
           age: number,
           occupation: string,
           deathCoverAmount: number
@@ -135,5 +156,19 @@ export class AppComponent implements OnInit {
       occupation: ['', Validators.required],
       deathCoverAmount: ['', Validators.required],
     });
+  }
+  private ageFromDateOfBirthday(dateOfBirth: any): number | null {
+    if (!dateOfBirth) return null;
+
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+
+    return age < 1 ? null : age;
   }
 }

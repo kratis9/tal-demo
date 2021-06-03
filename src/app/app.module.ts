@@ -5,9 +5,15 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TALMaterialModule } from './material.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { RestrictLettersOnlyDirective } from './character-only.directive';
+import { NumberOnlyDirective } from './number-only.directive';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    RestrictLettersOnlyDirective,
+    NumberOnlyDirective,
+  ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
