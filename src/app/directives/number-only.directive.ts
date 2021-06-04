@@ -1,6 +1,6 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 
-const REGEX_FOR_ONLY_LETTERS = /^[0-9]+$/g;
+const REGEX_FOR_ONLY_NUMBER = /^\d+$/g;
 
 @Directive({
   selector: '[numberOnly]',
@@ -14,7 +14,7 @@ export class NumberOnlyDirective {
     if (this.specialKeys.indexOf(event.key) !== -1) {
       return;
     }
-    if (!event.key.match(REGEX_FOR_ONLY_LETTERS)) {
+    if (!event.key.match(REGEX_FOR_ONLY_NUMBER)) {
       event.preventDefault();
     }
   }

@@ -14,6 +14,7 @@
               formControlName="name"
               lettersOnly
             />
+
             <mat-error *ngIf="nameControl.invalid"
               >Please enter valid name.
             </mat-error>
@@ -45,6 +46,7 @@
               type="number"
               formControlName="age"
               numberOnly
+              readonly
             />
             <mat-error *ngIf="ageControl.invalid"
               >Please enter valid age.
@@ -83,7 +85,8 @@
         <button mat-button color="warn" (click)="onReset()">Reset</button>
       </div>
       <div class="premium">
-        <span *ngIf="isPremiumVisible"> {{ sumAssured }}</span>
+        <p *ngIf="!isPremiumVisible">Monthly premium</p>
+        <span *ngIf="isPremiumVisible"> {{ sumAssured | currency }}</span>
       </div>
     </div>
   </mat-card-content>
